@@ -8,16 +8,31 @@ import "C"
 import "unsafe"
 import "errors"
 
-var BrickdHost string = "localhost"
-var BrickdPort int = 4223
-var BrickletUID string = "XYZ"
+const (
+	defaultBrickdHost string = "localhost"
+	defaultBrickdPort int    = 4223
+)
 
-func GetTemperature() (float64, error) {
+type tinkerforgeHumidityV2 struct {
+	BrickdHost  string
+	BrickdPort  int
+	BrickletUID string
+}
+
+func New() tinkerforgeHumidityV2 {
+	return tinkerforgeHumidityV2{defaultBrickdHost, defaultBrickdPort, ""}
+}
+
+func (t *tinkerforgeHumidityV2) GetTemperature() (float64, error) {
+	if t.BrickletUID == "" {
+		return 0, errors.New("BrickletUID is missing")
+	}
+
 	ipcon := C.init_ip_connection()
 
-	host := C.CString(BrickdHost)
-	port := C.uint16_t(uint16(BrickdPort))
-	uid := C.CString(BrickletUID)
+	host := C.CString(t.BrickdHost)
+	port := C.uint16_t(uint16(t.BrickdPort))
+	uid := C.CString(t.BrickletUID)
 
 	defer C.free(unsafe.Pointer(host))
 	defer C.free(unsafe.Pointer(uid))
@@ -37,12 +52,16 @@ func GetTemperature() (float64, error) {
 	return temperature, nil
 }
 
-func GetHumidity() (float64, error) {
+func (t *tinkerforgeHumidityV2) GetHumidity() (float64, error) {
+	if t.BrickletUID == "" {
+		return 0, errors.New("BrickletUID is missing")
+	}
+
 	ipcon := C.init_ip_connection()
 
-	host := C.CString(BrickdHost)
-	port := C.uint16_t(uint16(BrickdPort))
-	uid := C.CString(BrickletUID)
+	host := C.CString(t.BrickdHost)
+	port := C.uint16_t(uint16(t.BrickdPort))
+	uid := C.CString(t.BrickletUID)
 
 	defer C.free(unsafe.Pointer(host))
 	defer C.free(unsafe.Pointer(uid))
