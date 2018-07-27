@@ -1,6 +1,7 @@
 package tinkerforgeHumidityV2
 
 /*
+#cgo windows LDFLAGS: -lws2_32 -ladvapi32
 #include <get_humidity_v2.h>
 */
 import "C"
